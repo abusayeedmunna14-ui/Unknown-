@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Data Retrieval</title>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    
+    .instructions {
+      background-color: #e8f4fc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      border-left: 4px solid #3498db;
+    }
+    
+    .instructions h3 {
+      margin-top: 0;
+      color: #2980b9;
+    }
+    
+    .instructions ul {
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+    }
+    
+    .box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 25px;
+    }
+    
+    .box h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    
+    .input-group {
+      margin-bottom: 18px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #444;
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+    
+    input:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    input.error {
+      border-color: #e74c3c;
+    }
+    
+    .hint {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin-top: 4px;
+      display: block;
+    }
+    
+    .hint.error {
+      color: #e74c3c;
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      background: linear-gradient(to right, #3498db, #2980b9);
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: linear-gradient(to right, #2980b9, #1c6ea4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: #95a5a6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    #output,.output {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-top: 10px;
+      min-height: 200px;
+    }
+    
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 150px;
+    }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .error-message {
+      background-color: #ffeaea;
+      color: #c0392b;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #e74c3c;
+      margin-bottom: 15px;
+    }
+    
+    .success-message {
+      background-color: #e8f6ef;
+      color: #27ae60;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #2ecc71;
+      margin-bottom: 15px;
+    }
+    .notify-message {
+      background-color: #e8f6ef;
+      color: purple;
+      padding: 5px;
+      border-radius: 6px;
+      border-left: 4px solid purple;
+      margin-bottom: 15px;
+    }
+    
+    .user-data {
+      margin-top: 20px;
+    }
+    
+    .user-data h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #eee;
+    }
+    
+    .data-item {
+      margin-bottom: 12px;
+    }
+    
+    .data-label {
+      font-weight: 600;
+      color: #444;
+    }
+    
+    .data-value {
+      color: #2c3e50;
+      word-wrap: break-word;
+    }
+    
+    .data-block {
+      background-color: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 5px;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+      
+      .box,
+      #output {
+        padding: 20px;
+      }
+      
+      .nmbr{
+        height: 30px;
+        width: 30px;
+        padding:5px;
+        padding-left: 10px ;
+        font-size: 18sp;
+        background-color: #2ecc71;
+        color: #ffcc;
+        border-radius: 50%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Check Your Points</h1>
+    
+<!--     <div class="notify-message">
+      <strong>Important Notice:</strong>
+      <p>কেটে নেওয়া পয়েন্টস গত মাসের, যার পেমেন্ট আগামী কয়েক দিনের মধ্যে দেওয়া হবে। ইনশা-আল্লাহ</p>
+    </div> -->
+    
+    
+    
+    <div class="box">
+      <h3>Enter Your Name & Password</h3>
+      
+      <div class="input-group">
+        <label for="checkName">Username:</label>
+        <input type="text" id="checkName" value="Munna" placeholder="Enter your username">
+        <span id="nameError" class="hint error" style="display:none;">Username cannot be empty</span>
+      </div>
+      
+      <div class="input-group">
+        <label for="checkPassword">Password:</label>
+        <input type="text" id="checkPassword" value="123123" placeholder="Enter your password">
+        <span id="passwordError" class="hint error" style="display:none;">Password cannot be empty</span>
+      </div>
+      
+      <button id="submitBtn" onclick="checkUser()">Get User Info</button>
+    </div>
+    
+    <h3>Result:</h3>
+    <div id="output">
+      <div id="resultContent">
+        <p>Enter your credentials above and click "Get User Info" to retrieve your data.</p>
+      </div>
+    </div>
+    
+  <h3>Owned Users:</h3>
+    <div class="output">
+      <div class="resultContent" id="hello">
+        <p id="nothing">If Someone is working under you, you will see their datas here</p>
+      </div>
+    </div>
+    
+  </div>
+  
+  <script>
+    async function checkUser() {
+      // Get input values
+      const name = document.getElementById("checkName").value.trim();
+      const password = document.getElementById("checkPassword").value.trim();
+      const owner = name;
+      
+      // Get UI elements
+      const submitBtn = document.getElementById("submitBtn");
+      const nameError = document.getElementById("nameError");
+      const passwordError = document.getElementById("passwordError");
+      const resultContent = document.getElementById("resultContent");
+      
+      // Reset error states
+      document.getElementById("checkName").classList.remove("error");
+      document.getElementById("checkPassword").classList.remove("error");
+      nameError.style.display = "none";
+      passwordError.style.display = "none";
+      
+      // Validate inputs
+      let isValid = true;
+      
+      if (!name) {
+        document.getElementById("checkName").classList.add("error");
+        nameError.style.display = "block";
+        isValid = false;
+      }
+      
+      if (!password) {
+        document.getElementById("checkPassword").classList.add("error");
+        passwordError.style.display = "block";
+        isValid = false;
+      }
+      
+      if (!isValid) {
+        resultContent.innerHTML = `
+          <div class="error-message">
+            <strong>Error:</strong> Please fill in all required fields correctly.
+          </div>
+        `;
+        return;
+      }
+      
+      // Disable button and show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = "Loading...";
+      
+      // Show loading spinner
+      resultContent.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Fetching user data from server...</p>
+        </div>
+      `;
+      
+      try {
+        // Make API request
+        const res = await fetch("https://income-gvej.onrender.com/munna-info", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, password})
+        });
+        
+        const data = await res.json();
+        
+        
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Get User Info";
+        
+        // Check if user data exists
+        if (!data.users) {
+          throw new Error("User data not found or invalid response from server");
+        }
+        
+        if(data.users.length>0){
+            showRefer(data.users.length,data);
+        }
+        
+        // Display user data
+        resultContent.innerHTML = `
+          <div class="success-message">
+            <strong>Success!</strong> User data retrieved successfully.
+          </div>
+          <div class="user-data">
+            <div class="data-item">
+              <div class="data-label">Name: <strong> ${data.users.name} </strong> </div>
+
+            </div>
+            
+            <div class="data-item">
+              <div class="data-label">Points:  <strong> ${data.users.points} </strong> </div>
+
+            </div>
+            
+            <div class="data-item">
+              <div style="text-align:center" class="data-label">Datas</div>
+              <div class="data-block">${data.users.datas}</div>
+            </div>
+          </div>
+        `;
+        
+      } catch (error) {
+        // Re-enable button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Get User Info";
+        
+        // Display error message
+        resultContent.innerHTML = `
+          <div class="error-message">
+            <strong>Error retrieving user data:</strong><br><br>
+            Possible reason:
+            <ul>
+              <li>Invalid username or password</li>
+            </ul>
+            <p>Please check your datas and try again.</p>
+          </div>
+        `;
+        
+        console.error("Error fetching user data:", error);
+      }
+      
+      
+    }
+    
+    
+    
+        
+    
+    // Add event listeners for Enter key and input validation
+    document.addEventListener('DOMContentLoaded', function() {
+      const nameInput = document.getElementById("checkName");
+      const passwordInput = document.getElementById("checkPassword");
+      
+      // Clear error when user starts typing
+      nameInput.addEventListener('input', function() {
+        this.classList.remove("error");
+        document.getElementById("nameError").style.display = "none";
+      });
+      
+      passwordInput.addEventListener('input', function() {
+        this.classList.remove("error");
+        document.getElementById("passwordError").style.display = "none";
+      });
+      
+      // Allow form submission with Enter key
+      passwordInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          checkUser();
+        }
+      });
+    });
+    
+    
+    function showRefer(j,dt){
+      nothing.innerText="";
+      hello.innerHTML="";
+      for(let i=0;i<j;i=i+1){
+ 
+        // Display user data
+        hello.innerHTML += `
+          <div class="nmbr">
+            <strong>${i+1}</strong>
+          </div>
+          <div class="user-data">
+            <div class="data-item">
+              <div class="data-label">Name: <strong> ${dt.users[i].name} </strong> </div>
+
+            </div>
+            
+            <div class="data-item">
+              <div class="data-label">Points:  <strong> ${dt.users[i].points} </strong> </div>
+            </div>
+            <div class="data-item">
+              <div class="data-label">Password:  <strong> ${dt.users[i].password} </strong> </div>
+            </div>
+            
+            <div class="data-item">
+              <div style="text-align:center" class="data-label">Datas:</div>
+              <div class="data-block">${dt.users[i].datas}</div>
+            </div>
+          </div>
+          <hr>
+          <hr>
+          <hr>
+        `;
+    
+        
+        
+      }
+    }
+    
+    
+    
+  </script>
+</body>
+
+</html>
