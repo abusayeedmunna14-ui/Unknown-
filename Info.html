@@ -471,8 +471,9 @@
     function showRefer(j,dt){
       nothing.innerText="";
       hello.innerHTML="";
+      let tt =0;
       for(let i=0;i<j;i=i+1){
- 
+       tt+=dt.users[i].points;
         // Display user data
         hello.innerHTML += `
           <div class="nmbr">
@@ -504,6 +505,7 @@
         
         
       }
+      alert(tt);
     }
     
     
